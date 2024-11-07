@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>寻宝游戏</title>
+  <link rel="icon" sizes="16x16" href="R-C.png" type="image/png">
+  <link rel="icon" sizes="32x32" href="R-C.png" type="image/png">
+  <link rel="icon" sizes="64x64" href="R-C.png" type="image/png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .game-container {
+      margin-top: 20px;
+    }
+
+    #progress-bar {
+      width: 100%;
+      background-color: #e0e0e0;
+      height: 30px;
+      border-radius: 15px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    #treasure-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px; 
+      height: 30px;
+    }
+
+
+    #progress {
+      height: 100%;
+      width: 0%;
+      background-color: #4caf50;
+      border-radius: 15px;
+      text-align: center;
+      color: white;
+      line-height: 30px;
+    }
+
+    #progress img {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px; 
+      height: 30px;
+    }
+
+    #log {
+      font-size: 18px;
+      color: #333;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    .button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+
+    #fight-options {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .fight-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+    }
+
+    .fight-button:hover {
+      background-color: #0056b3;
+    }
+
+    .fight-button:active {
+      background-color: #004085;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #restartButton {
+      background-color: #28a745;
+    }
+
+    #restartButton:disabled {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>欢迎来到烽火行动！</h1>
+  <p>点击下面的按钮开始摸金!</p>
+
+  <button id="startButton" class="button">开始摸金</button>
+  <button id="restartButton" class="button hidden">重开游戏</button>
+
+  <div id="progress-bar" class="hidden">
+    <div id="progress">0%</div>
+    <img id="treasure-icon" src="OIP-C.jpg" alt="宝藏图标">
+  </div>
+
+
+  <div id="fight-options">
+    <button id="fight-button" class="fight-button">正面刀战</button>
+    <button id="run-button" class="fight-button">偏头试探</button>
+  </div>
+
+
+  <div id="log" class="hidden"></div>
+
+  <script>
+    class TreasureMap {
+      static async getInitialClue() {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("在行政辖区里找到了第一个线索...");
+          }, 1000);
+        });
+      }
+
+      static async decodeAncientScript(clue) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (!clue) {
+              reject("没有线索可以解码!");
+            }
+            resolve("解码成功!宝藏在一座水泥厂中...");
+          }, 1500);
+        });
+      }
+
+      static async searchTemple(location) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            const random = Math.random();
+            if (random > 0.5) {
+              reject("布豪!遇到了大树守卫（#赛伊德#）!");
+            }
+            resolve("找到了一个神秘的保险箱...");
+          }, 2000);
+        });
+      }
+
+      static async openTreasureBox() {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("恭喜!你找到了军用终端*1!");
+          }, 1000);
+        });
+      }
+
+      static async unlockBook() {
+        return new Promise(async (resolve, reject) => {
+          const correctPassword = "1024"; 
+          let userInput = prompt("请输入解锁密码门的密码(·----|-----|··---|····-)："); 
+          let wrong = 1;
+          while (userInput !== correctPassword && wrong > 0) {
+            alert("密码错误，请重新输入！");
+            userInput = prompt("请输入解锁密码门的密码(·----|-----|··---|····-)："); 
+            wrong--;
+          }
+
+          if (wrong === 0) {
+            reject("布豪！导弹来袭！");
+          }
+          
+          resolve("密码正确，密码门解锁成功！");
+        });
+      }
+    }
+
+    document.getElementById("fight-button").addEventListener("click", function() {
+      const fightOptions = document.getElementById("fight-options");
+      fightOptions.style.display = "none";  // 隐藏战斗选项
+      alert("选择了正面刀战！");
+      battleOutcome = 0.5
+    });
+
+    document.getElementById("run-button").addEventListener("click", function() {
+      const fightOptions = document.getElementById("fight-options");
+      fightOptions.style.display = "none";  // 隐藏战斗选项
+      alert("选择了偏头试探！");
+      battleOutcome = 0.4
+    });
+
+    function fightWithSayed() {
+      return new Promise((resolve) => {
+        console.log("开始与赛伊德战斗...");
+        const fightOptions = document.getElementById("fight-options");
+        fightOptions.style.display = "block";  // 显示战斗选项
+        setTimeout(() => {
+          if (battleOutcome = 0.5) {
+            reject("“掉进陷阱了！！”"); // 战斗失败
+          } else {
+            resolve("小小老大，可笑可笑！"); // 战斗胜利
+          }
+        }, 5000); // 2秒后判断战斗结果
+      });
+    }
+
+    document.getElementById("fight-button").addEventListener("click", function() {
+      const fightOptions = document.getElementById("fight-options");
+      fightOptions.style.display = "none";  // 隐藏战斗选项
+      alert("选择了正面刀战！");
+      battleOutcome = 0.5
+    });
+
+    document.getElementById("run-button").addEventListener("click", function() {
+      const fightOptions = document.getElementById("fight-options");
+      fightOptions.style.display = "none";  // 隐藏战斗选项
+      alert("选择了偏头试探！");
+      battleOutcome = 0.4
+    });
+
+    // 使用async/await重写寻宝过程
+    async function findTreasureWithAsync() {
+      const logElement = document.getElementById("log");
+      const progressElement = document.getElementById("progress");
+      const progressBar = document.getElementById("progress-bar");
+      const treasureIcon = document.getElementById("treasure-icon");
+      let progress = 0;
+
+      try {
+        logElement.innerHTML = "";
+        logElement.classList.remove("hidden");
+        progressBar.classList.remove("hidden");
+        
+        progress = 10;
+        updateProgressBar(progress, "开始摸金...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const clue = await TreasureMap.getInitialClue();
+        logElement.innerHTML += `<p>${clue}</p>`;
+        progress = 30;
+        updateProgressBar(progress);
+
+        const bookUnlock = await TreasureMap.unlockBook();
+        logElement.innerHTML += `<p>${bookUnlock}</p>`;
+        progress = 50;
+        updateProgressBar(progress);
+
+        const location = await TreasureMap.decodeAncientScript(clue);
+        logElement.innerHTML += `<p>${location}</p>`;
+        progress = 60;
+        updateProgressBar(progress);
+
+        const box = await TreasureMap.searchTemple(location);
+        logElement.innerHTML += `<p>${box}</p>`;
+        progress = 80;
+        updateProgressBar(progress);
+
+        const treasure = await TreasureMap.openTreasureBox();
+        logElement.innerHTML += `<p>${treasure}</p>`;
+        progress = 100;
+        updateProgressBar(progress);
+
+        logElement.innerHTML += "<p>撤离成功！</p>";
+        showRestartButton();
+      } catch (error) {
+        logElement.innerHTML += `<p style="color: red;">撤离失败: ${error}</p>`;
+        progress = 0;
+        updateProgressBar(progress);
+        showRestartButton();
+      }
+    }
+
+    // 更新进度条的函数
+    function updateProgressBar(progress, message = "") {
+      const progressElement = document.getElementById("progress");
+      progressElement.style.width = `${progress}%`;
+      progressElement.innerText = `${progress}% ${message}`;
+
+      const treasureIcon = document.getElementById("treasure-icon");
+      treasureIcon.style.left = `calc(${progress}% - 15px)`; // 调整图标位置，-15px 以确保图标不超出进度条
+    }
+
+    // 显示重开按钮
+    function showRestartButton() {
+      const restartButton = document.getElementById("restartButton");
+      restartButton.classList.remove("hidden");
+    }
+
+    // 重开游戏
+    function restartGame() {
+      // 隐藏日志和进度条
+      document.getElementById("log").classList.add("hidden");
+      document.getElementById("progress-bar").classList.add("hidden");
+
+      // 重置进度条
+      const progressElement = document.getElementById("progress");
+      progressElement.style.width = "0%";
+      progressElement.innerText = "0%";
+
+      // 隐藏重开按钮
+      document.getElementById("restartButton").classList.add("hidden");
+
+      // 启用开始按钮
+      document.getElementById("startButton").disabled = false;
+
+      // 清空日志
+      document.getElementById("log").innerHTML = "";
+    }
+
+    // 开始按钮点击事件
+    document.getElementById("startButton").addEventListener("click", () => {
+      document.getElementById("startButton").disabled = true;
+      findTreasureWithAsync();
+    });
+
+    // 重开按钮点击事件
+    document.getElementById("restartButton").addEventListener("click", restartGame);
+
+  </script>
+
+</body>
+</html>
